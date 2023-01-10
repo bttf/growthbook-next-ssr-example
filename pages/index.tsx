@@ -1,26 +1,11 @@
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
-import {
-  GrowthBookContext,
-  GrowthBook,
-  useGrowthBook,
-} from "@growthbook/growthbook-react";
-import { useState, useEffect, useContext } from "react";
+import { useGrowthBook } from "@growthbook/growthbook-react";
+import { useState, useEffect } from "react";
 import styles from "../styles/Home.module.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
-const FEATURES_ENDPOINT =
-  "http://localhost:3100/api/features/prod_AketOD945Ctes2OD4B8CrO8cuoNNQe7VzJTWGhdFc";
-
-const growthbook = new GrowthBook({
-  trackingCallback: (experiment, result) => {
-    console.log("Viewed Experiment", experiment, result);
-  },
-});
+import { FEATURES_ENDPOINT, growthbook } from "./_app";
+import Link from "next/link";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const res = await fetch(FEATURES_ENDPOINT);
@@ -52,21 +37,32 @@ export default function Home({
   showWelcomeBanner: boolean;
 }) {
   const router = useRouter();
-  const growthbook = useGrowthBook();
+  const gb = useGrowthBook();
 
   const [showWelcomeBanner, setShowWelcomeBanner] =
     useState(_showWelcomeBanner);
 
   useEffect(() => {
-    if (!growthbook) return;
+    if (!gb) return;
+
+    gb.setAttributes({
+      id: "duderooney",
+      loggedIn: true,
+      deviceId: "abcdef123456",
+      employee: true,
+      company: "acme",
+      country: "US",
+      browser: navigator.userAgent,
+      url: router.pathname,
+    });
 
     fetch(FEATURES_ENDPOINT)
       .then((res) => res.json())
       .then((json) => {
-        growthbook.setFeatures(json.features);
-        setShowWelcomeBanner(growthbook.feature("welcome-message").on);
+        gb.setFeatures(json.features);
+        setShowWelcomeBanner(gb.feature("welcome-message").on);
       });
-  }, [growthbook]);
+  }, [gb]);
 
   return (
     <>
@@ -80,6 +76,11 @@ export default function Home({
         {showWelcomeBanner && (
           <h1>Welcome to Next.js equipped w/ SSR Growthbook</h1>
         )}
+        <h2>
+          We should see a welcome banner above this. It should load without
+          flickering (feature-flag rendered server-side).
+        </h2>
+        <Link href="/no-welcome">Go to No-Welcome page</Link>
       </main>
     </>
   );
