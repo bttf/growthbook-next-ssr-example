@@ -1,8 +1,7 @@
 import { GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
 import Head from "next/head";
 import { useGrowthBook } from "@growthbook/growthbook-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "../styles/Home.module.css";
 import { FEATURES_ENDPOINT, growthbook } from "./_app";
 import Link from "next/link";
@@ -38,33 +37,9 @@ export default function NoWelcomePage({
 }) {
   console.log("DEBUG initial render", { _showWelcomeBanner });
 
-  const router = useRouter();
-  const gb = useGrowthBook();
-
-  const [showWelcomeBanner, setShowWelcomeBanner] =
-    useState(_showWelcomeBanner);
-
-  useEffect(() => {
-    if (!gb) return;
-
-    gb.setAttributes({
-      id: "duderooney",
-      loggedIn: true,
-      deviceId: "abcdef123456",
-      employee: false,
-      company: "acme",
-      country: "US",
-      browser: navigator.userAgent,
-      url: router.pathname,
-    });
-
-    fetch(FEATURES_ENDPOINT)
-      .then((res) => res.json())
-      .then((json) => {
-        gb.setFeatures(json.features);
-        setShowWelcomeBanner(gb.feature("welcome-message").on);
-      });
-  }, [gb]);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(
+    !!_showWelcomeBanner
+  );
 
   return (
     <>

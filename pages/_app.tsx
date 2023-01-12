@@ -4,6 +4,7 @@ import { GrowthBook, GrowthBookProvider } from "@growthbook/growthbook-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
+// Replace with your own endpoint
 export const FEATURES_ENDPOINT =
   "http://localhost:3100/api/features/prod_AketOD945Ctes2OD4B8CrO8cuoNNQe7VzJTWGhdFc";
 

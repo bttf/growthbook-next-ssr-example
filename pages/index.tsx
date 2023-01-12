@@ -42,6 +42,9 @@ export default function Home({
   const [showWelcomeBanner, setShowWelcomeBanner] =
     useState(_showWelcomeBanner);
 
+  // This following useEffect is not necessary, however you may like to use if
+  // you'd want to re-evaluate feature flags on the client-side due to any state
+  // change. (e.g. the user // logs in, or switches employment status, etc.)
   useEffect(() => {
     if (!gb) return;
 
@@ -62,7 +65,7 @@ export default function Home({
         gb.setFeatures(json.features);
         setShowWelcomeBanner(gb.feature("welcome-message").on);
       });
-  }, [gb]);
+  }, [gb, router.pathname]);
 
   return (
     <>
